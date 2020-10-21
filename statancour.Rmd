@@ -1,0 +1,81 @@
+---
+title: "statistical analsysis for coursera project"
+author: "sayonee"
+date: "10/21/2020"
+output: html_document
+---
+
+Synopsis
+The project consists of two different parts:
+A) We are asked to show Simulation Exercise to explore inference using the given data
+B) we are asked to show the Basic inferential analysis using the ToothGrowth data using the R datasets package
+
+Part A: Simulation Exercise for exploring inference
+
+The task is for us to investigate the exponential distribution in R and compare it wit : Central Limit Theorem. The exponential distribution will be simulated in R with rexp(n,lambda) where lambda is know to be the rate parameter. The mean of exponential distribution and the standard deviation are both given as 1/lambda where we know that lambda = 0.2, and distribution of averages of 40 exponentials and will perform 1000 simulations according to the question in place.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tinytex)
+set.seed(2038)
+lambdano <- 0.2
+n <- 40
+simp_data <- replicate(1000, rexp(n, lambdano))
+mean_simp_data1 <- apply(simp_data, 2, mean)
+```
+Mean Comparision
+Sample Mean vs Theoretical Mean of the Distribution
+
+```{r}
+# Sample Mean
+samplMeen <- mean(mean_simp_data1) # Mean of sample means
+print (paste("Sample Mean is given by = ", samplMeen))
+# Theoretical Mean
+# the expected mean of the exponential distribution of rate is given by = 1/lambda
+theory_mean1 <- (1/lambdano)
+print (paste("Theoretical Mean = ", theory_mean1))
+```
+```{r}
+# Histogram shows differences
+hist(mean_simp_data1, col="light blue", xlab = "Mean Average", main="Distribution of Exponential Average")
+abline(v = theory_mean1, col="brown")
+abline(v = samplMeen, col="green")
+```
+Question 2: Is asked to Show how variable the sample can be (via variance) and we are asked to compare it with the theoretical variance of the distribution
+
+Calculating: the theoretical and sample variance according to the given question in place
+```{r}
+# sample deviation & variance
+sampl_dev1 <- sd(mean_simp_data1)
+sampl_dev1
+sampl_vari1<- sampl_dev1^2
+sampl_vari1
+```
+
+```{r}
+# theoretical deviation & variance
+theory_dev1 <- (1/lambdano)/sqrt(n)
+theory_dev1
+theory_var1 <- ((1/lambdano)*(1/sqrt(n)))^2
+theory_var1
+```
+Question 3: we are asked to Show that the distribution is approx a  normal
+Histogram with having Density and sample means:
+```{r}
+dat <- data.frame(mean_simp_data1)
+ther <- data.frame(theory_mean1)
+ggpl<- ggplot(dat, aes(x = mean_simp_data1)) +
+geom_histogram(binwidth = .2, color="black", fill="brown" , aes(y=..density..))+
+ stat_function(fun=dnorm, args=list(mean=theory_mean1, sd=sd(mean_simp_data1)),
+ color="green", size =1) +
+ stat_density(geom = "line", color = "blue", size =1) +
+ labs(x="Mean", y= "Density",
+ title="Normal Distribution Comparision")
+ggpl
+```
+we are indicating that the density curve is fairly equivalent to the normal distribution curve also predicts and indicates the normal distribution
+```{r}
+qqnorm(mean_simp_data1)
+qqline(mean_simp_data1, col = "magenta")
+```
